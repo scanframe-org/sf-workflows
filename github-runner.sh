@@ -7,7 +7,7 @@ set -e
 # Script directory and repository root
 script_dir="$(cd "$(dirname "${0}")" && pwd)"
 # Include WriteLog function.
-source "${script_dir}/inc/logging.inc"
+source "${script_dir}/inc/Miscellaneous.sh"
 ## Trap script exit with function.
 trap 'ScriptExit "${BASH_SOURCE}" "${BASH_LINENO}" "${BASH_COMMAND}"' EXIT
 
