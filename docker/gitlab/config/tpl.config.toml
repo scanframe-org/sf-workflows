@@ -1,53 +1,373 @@
+# Maximum number of concurrent jobs the runner can execute at once.
 concurrent = 1
+
+# How often (in seconds) the runner checks for new jobs; 0 uses the default (3s).
 check_interval = 0
+
+# Timeout in seconds to wait for running jobs to finish before forcing shutdown; 0 means no timeout.
 shutdown_timeout = 0
 
+# Log level for runner output: "debug", "info", "warn", "error", "fatal", "panic".
+#log_level = "warn"
+
+# Log output format: "text", "json", or "runs".
+#log_format = "text"
+
+# Address for the runner's HTTP listener (for API endpoints like /api/v4/jobs).
+#listen_address = ""
+
+# Maximum log output size in KB per job; 4096 KB (4 MB) is the default.
+#output_limit = 4096
+
+# Timeout in seconds for artifacts to be available before a job times out; 0 disables.
+#artifacts_before_timeout = 0
+
+# Enable sentinel mode for high-availability runner setups.
+#sentinel_enabled = false
+
+# Action when a job fails: "collect_logs", "collect_logs_and_upload", etc.
+#post_error_behavior = ""
+
 [session_server]
+  # Timeout in seconds for interactive job sessions (e.g., debug or manual actions); 0 disables sessions.
   session_timeout = 1800
 
+  # Listen address for interactive job sessions (e.g., "[::]:8093").
+  #listen_address = "[::]:8093"
+
 [[runners]]
+  # Human-readable identifier for this runner, shown in the GitLab UI.
   name = "Docker"
+
+  # URL of the GitLab instance this runner connects to.
   url = "<gitlab-url>"
+
+  # Registration token used to authenticate and register the runner with GitLab.
   token = "<gitlab-token>"
+
+  # Timestamp when the runner token was obtained (set automatically during registration).
   token_obtained_at = 2024-01-26T19:52:16Z
+
+  # Token expiration date; 0001-01-01T00:00:00Z means the token never expires.
   token_expires_at = 0001-01-01T00:00:00Z
+
+  # Executor type: how jobs are run (e.g., "shell", "docker", "docker+machine", "kubernetes").
   executor = "docker"
+
+  # Maximum concurrent jobs for this specific runner (overrides global concurrent); 0 means unlimited.
+  #limit = 0
+
+  # Number of concurrent job requests this runner fetches from GitLab.
+  #request_concurrency = 1
+
+  # Maximum timeout in seconds for any job on this runner; 0 means no limit.
+  #maximum_timeout = 0
+
+  # Lock the runner to prevent changes from the GitLab UI.
+  #locked = false
+
+  # Allow this runner to execute jobs that have no tags.
+  #run_untagged = false
+
+  # Tags assigned to this runner for job matching (e.g., ["docker", "linux"]).
+  #tag_list = []
+
+  # Directory where builds are stored inside the container.
+  #builds_dir = ""
+
+  # Directory where cache is stored locally.
+  #cache_dir = ""
+
+  # Shell to use for shell executor (e.g., "bash", "powershell").
+  #shell = "bash"
+
+  # Custom URL for cloning repositories.
+  #clone_url = ""
+
+  # Disable git checkout during the clone step.
+  #clone_disable_checkout = false
+
+  # Disable git submodule fetching during the clone step.
+  #clone_disable_submodules = false
+
+  # Disable git shallow clone deepening.
+  #clone_disable_deepening = false
+
+  # Enable distributed execution for this runner.
+  #distributed_exec = false
+
+  # Run pre-clone hooks before the repository is cloned.
+  #pre_clone_hooks = true
+
+  # Run pre-step hooks before each script step.
+  #pre_step_hooks = true
+
+  # Run post-step hooks after each script step.
+  #post_step_hooks = true
+
+  # Ignore job exit codes (jobs always report success).
+  #ignore_exit_codes = false
+
+  # Action when job fails: "default", "keep", or "archive".
+  #when_failed = "default"
+
+  # Whether to collect logs after job completion.
+  #collect_logs = true
+
+  # Environment variables injected into every job; listed as KEY=VALUE pairs.
   # Environment variable actually not needed at this point.
   environment = ["BIND_DIR=/tmp/binder"]
 
   [runners.cache]
-    # # Types available s3, gcs, azure.
+    # Cache backend type. Types available: s3, gcs, azure.
     Type = "s3"
     # Type = "s3"
+
+    # If true, the cache is shared across all projects using this runner.
     Shared = true
+
+    # Subdirectory path prepended to the cache URL for organizing cached artifacts.
     # # Name of the path to prepend to the cache URL.
     Path = "cache"
+
+    # Maximum size in bytes for cache archives uploaded to cloud storage; 0 means unlimited.
     # # Limit, in bytes, of the cache archive being uploaded to cloud storage.
-    # MaxUploadedArchiveSize = 0 
+    # MaxUploadedArchiveSize = 0
+
+    # Key for encrypting cache data stored in the backend.
+    #EncryptionKey = ""
 
   [runners.cache.s3]
+    # S3-compatible server address (e.g., MinIO endpoint URL).
     ServerAddress = "<minio-server-url>"    
+
+    # Skip TLS certificate verification for the S3 connection (use only in trusted networks).
     Insecure = true
+
+    # S3 access key name for authentication.
     AccessKey = "<key-name>"
+
+    # S3 secret key for authentication.
     SecretKey = "<key-secret>"
+
+    # Name of the S3 bucket used to store cached artifacts.
     BucketName = "<bucket-name-for-cache>"
 
+    # S3 bucket region (e.g., "us-east-1").
+    #BucketLocation = ""
+
   [runners.docker]
+    # Default Docker image used for jobs when no image is specified in the CI configuration.
     image = "<private-or-global-image-name>"
+
+    # Enable TLS verification when pulling Docker images and connecting to the Docker daemon.
     tls_verify = false
+
+    # Image pull policy: "always" pulls every time, "if-not-present" uses local cache, "never" requires local image.
     pull_policy = "always"
+
+    # Run the container in privileged mode, granting full access to host devices.
     # Needed for fuse to be working.
     privileged = true
+
+    # Optional alternative to privileged mode: grant specific capabilities and device access for FUSE.
     # Optional other way to enable fuse inside the container.
     #cap_add = ["SYS_ADMIN", "MKNOD"]
     #devices = ["/dev/fuse"]
     #security-opt = ["apparmor:unconfined"]
+
+    # Custom Docker daemon endpoint (e.g., "unix:///var/run/docker.sock").
+    #host = "unix:///var/run/docker.sock"
+
+    # Path to TLS certificates for Docker daemon connection.
+    #tls_cert_path = ""
+
+    # Custom hostname for the job container.
+    #hostname = ""
+
+    # Custom domain name for the container.
+    #domainname = ""
+
+    # Memory limit for the container in MB.
+    #mem = 0
+
+    # Memory swap limit for the container.
+    #memswap = 0
+
+    # Number of CPUs allocated to the container.
+    #cpus = 0
+
+    # CPU shares (relative weight for CPU scheduling).
+    #cpu_shares = 0
+
+    # CPU quota in microseconds.
+    #cpu_quota = 0
+
+    # CPU period in microseconds.
+    #cpu_period = 0
+
+    # CPUs to use, e.g., "0,1" to restrict to specific cores.
+    #cpuset_cpus = ""
+
+    # Linux capabilities to drop from the container.
+    #cap_drop = []
+
+    # DNS servers for the container (e.g., ["8.8.8.8", "8.8.4.4"]).
+    #dns = []
+
+    # DNS search domains for the container.
+    #dns_search = []
+
+    # Extra hosts added to /etc/hosts (e.g., ["myhost:127.0.0.1"]).
+    #extra_hosts = []
+
+    # Links to other containers (e.g., ["service_name:alias"]).
+    #links = []
+
+    # Docker network mode (e.g., "host", "bridge", or a custom network name).
+    #network_mode = "default"
+
+    # IPC mode for the container (e.g., "host" or "shareable").
+    #ipc_mode = ""
+
+    # PID mode for the container (e.g., "host").
+    #pid = ""
+
+    # User to run as inside the container (e.g., "1000:1000").
+    #user = ""
+
+    # Working directory inside the container.
+    #workdir = ""
+
+    # Volumes from other containers (e.g., ["container_name"]).
+    #volumes_from = []
+
+    # Whitelist of allowed Docker images for jobs.
+    #allowed_images = []
+
+    # Whitelist of allowed Docker images for services.
+    #allowed_services = []
+
+    # Device access mappings for service containers.
+    #services_devices = {}
+
+    # Enable health checks for service containers.
+    #enable_service_healthcheck = true
+
+    # Timeout in seconds for waiting on service containers to become healthy.
+    #wait_for_services_timeout = 30
+
+    # Docker runtime (e.g., "nvidia" for GPU support).
+    #runtime = ""
+
+    # Use Tini as init process (PID 1) in the container.
+    #init = false
+
+    # Temporary filesystem mounts (e.g., {"/run" = "rw,noexec,nosuid,size=65536k"}).
+    #tmpfs = {}
+
+    # Labels to add to job containers.
+    #container_labels = []
+
+    # Labels to add to service containers.
+    #service_container_labels = []
+
+    # Labels to add to helper containers.
+    #helper_container_labels = []
+
+    # MTU for service container network; 0 uses the default.
+    #services_network_mtu = 0
+
+    # Remove volumes when the container is removed.
+    #remove_volumes = false
+
+    # Docker mirror for pulling images.
+    #mirror = ""
+
+    # Mirror for helper images.
+    #mirror_image = ""
+
+    # OOM score adjustment for the container process.
+    #oom_score_adj = 0
+
+    # Ulimits for the container (e.g., [{name = "nofile", soft = 65536, hard = 65536}]).
+    #ulimits = []
+
+    # Message displayed when a container is killed.
+    #killed_container_lock_message = ""
+
+    # Wait period in seconds before shutting down the container.
+    #shutdown_wait_period = 0
+
+    # Label for cache volumes.
+    #volumes_cache_label = ""
+
+    # Propagate job failure to the entire container group.
+    #propagate_failure_to_container_group = false
+
+    # System controls for the container.
+    #sys_ctls = {}
+
+    # Storage options for the container.
+    #storage_opt = {}
+
+    # Run privileged without mounting host devices.
+    #privileged_without_host_devices = false
+
+    # Additional mounts beyond volumes.
+    #mounts = []
+
+    # User namespace mode for the container.
+    #userns_mode = ""
+
+    # Parent cgroup for the container.
+    #cgroup_parent = ""
+
+    # MAC address for the container.
+    #mac_address = ""
+
+    # Shutdown timeout for the container.
+    #shutdown_timeout = 0
+
+    # Log driver options for the container (e.g., {labels = "com.foo.bar"}).
+    #log_options = {}
+
+    # Cache directory for Docker executor.
+    #cache_dir = ""
+
+    # Directory for cache volumes.
+    #volumes_cache_dir = ""
+
+    # If true, prevents the runner from overwriting the container's entrypoint.
     disable_entrypoint_overwrite = false
+
+    # Disable the OOM (Out of Memory) killer for the job container.
     oom_kill_disable = false
+
+    # If true, disables caching for this runner entirely.
     disable_cache = false
+
+    # Host volumes mounted into the job container as bind mounts.
     # Location of the local cache on a separate volume.
     # (probably not needed when using a remote cache as MinIO.)
     volumes = ["/cache"]
+
+    # Size of /dev/shm (shared memory) in MB; 0 uses the Docker default (64MB).
     shm_size = 0
+
+    # Custom MTU (Maximum Transmission Unit) for the Docker network; 0 uses the default.
     network_mtu = 0
+
+
+[runners.feature_flags]
+  # Enable fastzip archive extraction for faster cache and artifact handling.
+  #FF_USE_FASTZIP = true
+
+  # Use isolated network for container groups.
+  #FF_USE-ISOLATED-NETWORK = true
+
+
+[runners.custom_build_dir]
+  # Enable custom build directory support for runners.
+  #enabled = true
   

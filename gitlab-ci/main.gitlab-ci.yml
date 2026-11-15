@@ -228,6 +228,10 @@ linux-gcov:
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_REF_PROTECTED != "true"'
       when: on_success
       allow_failure: false
+    # Run automatically for push to protected branches (e.g., MR merge to main).
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_REF_PROTECTED == "true"'
+      when: on_success
+      allow_failure: false
     # By default, run manual.
     - when: manual
     - allow_failure: true

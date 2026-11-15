@@ -181,14 +181,9 @@ case "${cmd}" in
 		fi
 		;;
 
-	status | list | help)
-		docker run --rm --tty --interactive \
-			--name "${container_name}" \
-			--user "0:$(id -g)" \
-			--volume "${config_dir}:/etc/gitlab-runner:rw" \
-			--volume "/var/run/docker.sock:/var/run/docker.sock:rw" \
-			--hostname "${container_name}" \
-			"${img_name}" "${cmd}"
+	status)
+		# Show the status of the container.
+		docker ps --filter name="${container_name}"
 		;;
 
 	*)
